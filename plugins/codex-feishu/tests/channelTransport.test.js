@@ -99,3 +99,57 @@ test('channel transport ignores non-text messages for the text-only prototype', 
 
   assert.deepEqual(received, []);
 });
+
+test('channel transport disables mention requirement and forwards reject events', async () => {
+  const handlers = new Map();
+  const rejected = [];
+  const channelFactoryCalls = [];
+
+  const transport = createChannelTransport({
+    appId: 'cli_demo',
+    appSecret: 'secret_demo',
+    onTextMessage() {},
+    onRejectedMessage(event) {
+      rejected.push(event);
+    },
+    channelFactory(options) {
+      channelFactoryCalls.push(options);
+
+      return {
+        on(name, handler) {
+          handlers.set(name, handler);
+          return () => handlers.delete(name);
+        },
+        async connect() {},
+        async send() {},
+      };
+    },
+  });
+
+  await transport.start();
+  await handlers.get('reject')({
+    messageId: 'om_reject',
+    chatId: 'oc_group',
+    senderId: 'ou_demo',
+    reason: 'no_mention',
+  });
+
+  assert.deepEqual(channelFactoryCalls, [
+    {
+      appId: 'cli_demo',
+      appSecret: 'secret_demo',
+      loggerLevel: 4,
+      policy: {
+        requireMention: false,
+      },
+    },
+  ]);
+  assert.deepEqual(rejected, [
+    {
+      messageId: 'om_reject',
+      chatId: 'oc_group',
+      senderId: 'ou_demo',
+      reason: 'no_mention',
+    },
+  ]);
+});

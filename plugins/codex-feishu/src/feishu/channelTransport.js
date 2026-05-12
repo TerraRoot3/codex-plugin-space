@@ -1,4 +1,7 @@
-import { createLarkChannel } from '@larksuiteoapi/node-sdk';
+import {
+  createLarkChannel,
+  LoggerLevel,
+} from '@larksuiteoapi/node-sdk';
 
 function normalizeIncomingMessage(message) {
   if (message?.rawContentType !== 'text') {
@@ -18,20 +21,36 @@ export function createChannelTransport({
   appId,
   appSecret,
   onTextMessage,
+  onRejectedMessage,
   channelFactory = createLarkChannel,
 }) {
-  const channel = channelFactory({ appId, appSecret });
+  const channel = channelFactory({
+    appId,
+    appSecret,
+    loggerLevel: LoggerLevel.debug,
+    policy: {
+      requireMention: false,
+    },
+  });
 
   return {
     channel,
     async start() {
       channel.on('message', async (message) => {
+        console.info(
+          `codex-feishu incoming message ${message.messageId} type=${message.rawContentType} chat=${message.chatId}`,
+        );
         const normalized = normalizeIncomingMessage(message);
         if (!normalized) {
           return;
         }
 
         await onTextMessage(normalized);
+      });
+      channel.on('reject', (event) => {
+        if (typeof onRejectedMessage === 'function') {
+          onRejectedMessage(event);
+        }
       });
 
       await channel.connect();

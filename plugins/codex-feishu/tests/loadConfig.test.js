@@ -45,6 +45,9 @@ test('loadConfig prefers settings over environment variables', async () => {
 });
 
 test('loadConfig falls back to environment variables', async () => {
+  const tempHome = createTempHome();
+
+  try {
   const config = await loadConfig({
     settings: {},
     env: {
@@ -52,6 +55,7 @@ test('loadConfig falls back to environment variables', async () => {
       FEISHU_APP_SECRET: 'secret_env',
       CODEX_FEISHU_MODE: 'background',
       CODEX_FEISHU_DATA_DIR: '/tmp/from-env',
+      CODEX_FEISHU_HOME: tempHome,
     },
   });
 
@@ -60,8 +64,11 @@ test('loadConfig falls back to environment variables', async () => {
     appSecret: 'secret_env',
     mode: 'background',
     dataDir: '/tmp/from-env',
-    configHome: path.join(os.homedir(), '.codex-feishu'),
+    configHome: tempHome,
   });
+  } finally {
+    fs.rmSync(tempHome, { recursive: true, force: true });
+  }
 });
 
 test('loadConfig falls back to stored config and secret file', async () => {
@@ -103,12 +110,20 @@ test('loadConfig falls back to stored config and secret file', async () => {
 });
 
 test('loadConfig throws when app id or secret is missing', async () => {
+  const tempHome = createTempHome();
+
+  try {
   await assert.rejects(
     () =>
       loadConfig({
         settings: {},
-        env: {},
+        env: {
+          CODEX_FEISHU_HOME: tempHome,
+        },
       }),
     ConfigError,
   );
+  } finally {
+    fs.rmSync(tempHome, { recursive: true, force: true });
+  }
 });

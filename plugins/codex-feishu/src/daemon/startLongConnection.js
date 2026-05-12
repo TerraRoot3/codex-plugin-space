@@ -24,6 +24,11 @@ export async function startLongConnection({
     onTextMessage: async (textEvent) => {
       await orchestrator.handleTextEvent(textEvent);
     },
+    onRejectedMessage: (event) => {
+      console.warn(
+        `codex-feishu rejected message ${event.messageId} from chat ${event.chatId}: ${event.reason}`,
+      );
+    },
   });
 
   orchestrator = createTaskOrchestrator({
