@@ -9,12 +9,13 @@ import { createTaskOrchestrator } from './taskOrchestrator.js';
 export async function startLongConnection({
   settings,
   env,
-  cwd = process.cwd(),
+  cwd,
   codexRunner,
   codexRunnerFactory = createCliCodexRunner,
   channelTransportFactory = createChannelTransport,
 } = {}) {
   const config = await loadConfig({ settings, env });
+  const workspaceDir = cwd ?? config.workspaceDir ?? process.cwd();
   const dbPath = path.join(config.dataDir, 'state.sqlite');
   const db = openDb(dbPath);
 
@@ -37,7 +38,7 @@ export async function startLongConnection({
     codexRunner:
       codexRunner ??
       codexRunnerFactory({
-        cwd,
+        cwd: workspaceDir,
         codexHome: path.join(config.dataDir, 'codex-home'),
       }),
     replyClient: {

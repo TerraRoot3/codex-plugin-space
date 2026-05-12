@@ -8,6 +8,7 @@ import { loadConfig } from '../config/loadConfig.js';
 import {
   resolveConfigHome,
   resolveDataDir,
+  resolveWorkspaceDir,
 } from '../config/paths.js';
 import { runOneShot } from '../daemon/runOneShot.js';
 import {
@@ -75,6 +76,7 @@ export function createMcpService({
     const secret = await readFileSecretImpl({ settings, env });
     const configHome = resolveConfigHome({ settings, env });
     const dataDir = resolveDataDir({ settings, storedConfig, env });
+    const workspaceDir = resolveWorkspaceDir({ settings, storedConfig, env });
     const daemon = await readDaemonStatusImpl({ settings, env });
     const dbPath = path.join(dataDir, 'state.sqlite');
 
@@ -95,6 +97,7 @@ export function createMcpService({
         hasSecret: Boolean(secret),
         mode: storedConfig.mode ?? 'background',
         dataDir,
+        workspaceDir: workspaceDir ?? null,
         configHome,
       },
       daemon,
@@ -110,6 +113,7 @@ export function createMcpService({
       appSecret,
       mode,
       dataDir,
+      workspaceDir,
     } = {}) {
       const current = await readStoredConfigImpl({ settings, env });
       const nextConfig = {
@@ -119,6 +123,11 @@ export function createMcpService({
           dataDir ??
           current.dataDir ??
           resolveDataDir({ settings, storedConfig: current, env }),
+        workspaceDir:
+          workspaceDir ??
+          current.workspaceDir ??
+          resolveWorkspaceDir({ settings, storedConfig: current, env }) ??
+          null,
       };
 
       await writeStoredConfigImpl({

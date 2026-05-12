@@ -22,6 +22,7 @@ test('startLongConnection wires transport to orchestrator and replies through tr
         appId: 'cli_demo',
         appSecret: 'secret_demo',
         dataDir: tempDir,
+        workspaceDir: '/tmp/workspace-start-long-connection',
       },
       codexRunner: {
         async runTextTurn(input) {
@@ -79,6 +80,7 @@ test('startLongConnection builds the default Codex runner with an isolated CODEX
         appId: 'cli_demo',
         appSecret: 'secret_demo',
         dataDir: tempDir,
+        workspaceDir: '/tmp/workspace-start-long-connection',
       },
       codexRunnerFactory(options) {
         runnerCalls.push(options);
@@ -102,6 +104,7 @@ test('startLongConnection builds the default Codex runner with an isolated CODEX
 
     assert.equal(runnerCalls.length, 1);
     assert.equal(runnerCalls[0].codexHome, path.join(tempDir, 'codex-home'));
+    assert.equal(runnerCalls[0].cwd, '/tmp/workspace-start-long-connection');
   } finally {
     fs.rmSync(tempDir, { recursive: true, force: true });
   }

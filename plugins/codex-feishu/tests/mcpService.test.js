@@ -37,11 +37,13 @@ test('mcp service configures bridge state and reports status', async () => {
       appId: 'cli_app_id',
       appSecret: 'secret_demo',
       mode: 'background',
+      workspaceDir: '/tmp/workspace-demo',
     });
 
     assert.equal(configured.configured, true);
     assert.equal(configured.config.appId, 'cli_app_id');
     assert.equal(configured.config.hasSecret, true);
+    assert.equal(configured.config.workspaceDir, '/tmp/workspace-demo');
 
     const started = await service.startBridge();
     assert.equal(started.daemon.running, true);

@@ -27,6 +27,7 @@ test('stored config persists non-secret settings', async () => {
         appSecret: 'should_not_be_written',
         mode: 'background',
         dataDir: '/tmp/codex-feishu-data',
+        workspaceDir: '/tmp/codex-feishu-workspace',
       },
       env: {
         CODEX_FEISHU_HOME: tempHome,
@@ -43,6 +44,7 @@ test('stored config persists non-secret settings', async () => {
       appId: 'cli_app_id',
       mode: 'background',
       dataDir: '/tmp/codex-feishu-data',
+      workspaceDir: '/tmp/codex-feishu-workspace',
     });
   } finally {
     fs.rmSync(tempHome, { recursive: true, force: true });

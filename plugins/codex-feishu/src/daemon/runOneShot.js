@@ -20,9 +20,10 @@ export async function runOneShot({
   codexRunner,
   codexRunnerFactory = createCliCodexRunner,
   replyClient,
-  cwd = process.cwd(),
+  cwd,
 } = {}) {
   const config = await loadConfig({ settings, env });
+  const workspaceDir = cwd ?? config.workspaceDir ?? process.cwd();
   const dbPath = path.join(config.dataDir, 'state.sqlite');
   const db = openDb(dbPath);
 
@@ -31,7 +32,7 @@ export async function runOneShot({
     codexRunner:
       codexRunner ??
       codexRunnerFactory({
-        cwd,
+        cwd: workspaceDir,
         codexHome: path.join(config.dataDir, 'codex-home'),
       }),
     replyClient: replyClient ?? createStdoutReplyClient(),

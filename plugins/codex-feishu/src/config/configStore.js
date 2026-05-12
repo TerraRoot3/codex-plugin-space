@@ -11,6 +11,9 @@ function sanitizeStoredConfig(input) {
     ...(firstNonEmpty(input?.appId) ? { appId: input.appId } : {}),
     ...(firstNonEmpty(input?.mode) ? { mode: input.mode } : {}),
     ...(firstNonEmpty(input?.dataDir) ? { dataDir: input.dataDir } : {}),
+    ...(firstNonEmpty(input?.workspaceDir)
+      ? { workspaceDir: input.workspaceDir }
+      : {}),
   };
 }
 

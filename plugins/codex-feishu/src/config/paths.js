@@ -33,6 +33,18 @@ export function resolveDataDir({
   );
 }
 
+export function resolveWorkspaceDir({
+  settings = {},
+  storedConfig = {},
+  env = process.env,
+} = {}) {
+  return firstNonEmpty(
+    settings.workspaceDir,
+    storedConfig.workspaceDir,
+    env.CODEX_FEISHU_WORKSPACE_DIR,
+  );
+}
+
 export function configFilePath(configHome) {
   return path.join(configHome, 'config.json');
 }

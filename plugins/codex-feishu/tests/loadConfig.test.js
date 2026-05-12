@@ -26,12 +26,14 @@ test('loadConfig prefers settings over environment variables', async () => {
       appSecret: 'secret_settings',
       mode: 'current',
       dataDir: '/tmp/from-settings',
+      workspaceDir: '/tmp/workspace-settings',
     },
     env: {
       FEISHU_APP_ID: 'cli_env',
       FEISHU_APP_SECRET: 'secret_env',
       CODEX_FEISHU_MODE: 'background',
       CODEX_FEISHU_DATA_DIR: '/tmp/from-env',
+      CODEX_FEISHU_WORKSPACE_DIR: '/tmp/workspace-env',
     },
   });
 
@@ -40,6 +42,7 @@ test('loadConfig prefers settings over environment variables', async () => {
     appSecret: 'secret_settings',
     mode: 'current',
     dataDir: '/tmp/from-settings',
+    workspaceDir: '/tmp/workspace-settings',
     configHome: path.join(os.homedir(), '.codex-feishu'),
   });
 });
@@ -55,6 +58,7 @@ test('loadConfig falls back to environment variables', async () => {
       FEISHU_APP_SECRET: 'secret_env',
       CODEX_FEISHU_MODE: 'background',
       CODEX_FEISHU_DATA_DIR: '/tmp/from-env',
+      CODEX_FEISHU_WORKSPACE_DIR: '/tmp/workspace-env',
       CODEX_FEISHU_HOME: tempHome,
     },
   });
@@ -64,6 +68,7 @@ test('loadConfig falls back to environment variables', async () => {
     appSecret: 'secret_env',
     mode: 'background',
     dataDir: '/tmp/from-env',
+    workspaceDir: '/tmp/workspace-env',
     configHome: tempHome,
   });
   } finally {
@@ -80,6 +85,7 @@ test('loadConfig falls back to stored config and secret file', async () => {
         appId: 'stored_app',
         mode: 'current',
         dataDir: '/tmp/from-store',
+        workspaceDir: '/tmp/from-store-workspace',
       },
       env: {
         CODEX_FEISHU_HOME: tempHome,
@@ -102,6 +108,7 @@ test('loadConfig falls back to stored config and secret file', async () => {
       appSecret: 'stored_secret',
       mode: 'current',
       dataDir: '/tmp/from-store',
+      workspaceDir: '/tmp/from-store-workspace',
       configHome: tempHome,
     });
   } finally {

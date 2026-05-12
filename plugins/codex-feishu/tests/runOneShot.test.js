@@ -39,6 +39,7 @@ test('runOneShot processes a text payload and returns reply output', async () =>
         appId: 'cli_settings',
         appSecret: 'secret_settings',
         dataDir: tempDir,
+        workspaceDir: '/tmp/workspace-run-one-shot',
       },
       codexRunner: {
         async runTextTurn() {
@@ -98,6 +99,7 @@ test('runOneShot builds the default Codex runner with an isolated CODEX_HOME', a
         appId: 'cli_settings',
         appSecret: 'secret_settings',
         dataDir: tempDir,
+        workspaceDir: '/tmp/workspace-run-one-shot',
       },
       codexRunnerFactory(options) {
         runnerCalls.push(options);
@@ -117,6 +119,7 @@ test('runOneShot builds the default Codex runner with an isolated CODEX_HOME', a
 
     assert.equal(runnerCalls.length, 1);
     assert.equal(runnerCalls[0].codexHome, path.join(tempDir, 'codex-home'));
+    assert.equal(runnerCalls[0].cwd, '/tmp/workspace-run-one-shot');
   } finally {
     fs.rmSync(tempDir, { recursive: true, force: true });
   }

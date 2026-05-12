@@ -5,6 +5,7 @@ import {
   firstNonEmpty,
   resolveConfigHome,
   resolveDataDir,
+  resolveWorkspaceDir,
 } from './paths.js';
 
 export class ConfigError extends Error {
@@ -38,6 +39,7 @@ export async function loadConfig({ settings = {}, env = process.env } = {}) {
     'background',
   );
   const dataDir = resolveDataDir({ settings, storedConfig, env });
+  const workspaceDir = resolveWorkspaceDir({ settings, storedConfig, env });
 
   if (!appId || !appSecret) {
     throw new ConfigError('FEISHU_APP_ID and FEISHU_APP_SECRET are required');
@@ -48,6 +50,7 @@ export async function loadConfig({ settings = {}, env = process.env } = {}) {
     appSecret,
     mode,
     dataDir,
+    workspaceDir,
     configHome,
   };
 }
