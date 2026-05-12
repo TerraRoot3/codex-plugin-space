@@ -1,6 +1,6 @@
 {
   "name": "codex-feishu",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Local Codex plugin that bridges Feishu text conversations into Codex.",
   "author": {
     "name": "hanbaokun",

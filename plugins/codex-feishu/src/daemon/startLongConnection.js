@@ -11,6 +11,7 @@ export async function startLongConnection({
   env,
   cwd = process.cwd(),
   codexRunner,
+  codexRunnerFactory = createCliCodexRunner,
   channelTransportFactory = createChannelTransport,
 } = {}) {
   const config = await loadConfig({ settings, env });
@@ -33,7 +34,12 @@ export async function startLongConnection({
 
   orchestrator = createTaskOrchestrator({
     db,
-    codexRunner: codexRunner ?? createCliCodexRunner({ cwd }),
+    codexRunner:
+      codexRunner ??
+      codexRunnerFactory({
+        cwd,
+        codexHome: path.join(config.dataDir, 'codex-home'),
+      }),
     replyClient: {
       async sendText(reply) {
         await transport.sendText(reply);

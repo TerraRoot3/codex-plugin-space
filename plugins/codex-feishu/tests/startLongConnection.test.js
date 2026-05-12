@@ -68,3 +68,41 @@ test('startLongConnection wires transport to orchestrator and replies through tr
     fs.rmSync(tempDir, { recursive: true, force: true });
   }
 });
+
+test('startLongConnection builds the default Codex runner with an isolated CODEX_HOME', async () => {
+  const tempDir = createTempDir();
+  const runnerCalls = [];
+
+  try {
+    await startLongConnection({
+      settings: {
+        appId: 'cli_demo',
+        appSecret: 'secret_demo',
+        dataDir: tempDir,
+      },
+      codexRunnerFactory(options) {
+        runnerCalls.push(options);
+        return {
+          async runTextTurn(input) {
+            return {
+              threadId: input.threadId ?? 'thread_003',
+              replyText: `echo: ${input.text}`,
+            };
+          },
+        };
+      },
+      channelTransportFactory() {
+        return {
+          async start() {},
+          async sendText() {},
+          async disconnect() {},
+        };
+      },
+    });
+
+    assert.equal(runnerCalls.length, 1);
+    assert.equal(runnerCalls[0].codexHome, path.join(tempDir, 'codex-home'));
+  } finally {
+    fs.rmSync(tempDir, { recursive: true, force: true });
+  }
+});

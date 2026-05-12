@@ -31,9 +31,24 @@ function parseThreadStarted(stdout) {
   return null;
 }
 
+async function prepareCodexHome({ codexHome, sourceCodexHome }) {
+  if (!codexHome) {
+    return;
+  }
+
+  await fs.mkdir(codexHome, { recursive: true });
+
+  const sourceAuthPath = path.join(sourceCodexHome, 'auth.json');
+  const targetAuthPath = path.join(codexHome, 'auth.json');
+
+  await fs.copyFile(sourceAuthPath, targetAuthPath);
+}
+
 export function createCliCodexRunner({
   cwd,
   tempDir = os.tmpdir(),
+  codexHome,
+  sourceCodexHome = path.join(os.homedir(), '.codex'),
   execFile = execFileDefault,
 } = {}) {
   return {
@@ -61,7 +76,18 @@ export function createCliCodexRunner({
             text,
           ];
 
-      const { stdout } = await execFile('codex', args, { cwd });
+      await prepareCodexHome({ codexHome, sourceCodexHome });
+
+      const execOptions = { cwd };
+
+      if (codexHome) {
+        execOptions.env = {
+          ...process.env,
+          CODEX_HOME: codexHome,
+        };
+      }
+
+      const { stdout } = await execFile('codex', args, execOptions);
       const replyText = await fs.readFile(messagePath, 'utf8');
       const resolvedThreadId =
         parseThreadStarted(stdout) ?? threadId;

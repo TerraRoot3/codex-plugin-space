@@ -68,3 +68,56 @@ test('runOneShot processes a text payload and returns reply output', async () =>
     fs.rmSync(tempDir, { recursive: true, force: true });
   }
 });
+
+test('runOneShot builds the default Codex runner with an isolated CODEX_HOME', async () => {
+  const tempDir = createTempDir();
+  const runnerCalls = [];
+
+  try {
+    await runOneShot({
+      payload: {
+        schema: '2.0',
+        header: {
+          event_type: 'im.message.receive_v1',
+        },
+        event: {
+          sender: {
+            sender_id: {
+              open_id: 'ou_demo',
+            },
+          },
+          message: {
+            message_id: 'om_001',
+            chat_id: 'oc_001',
+            message_type: 'text',
+            content: JSON.stringify({ text: 'hello codex' }),
+          },
+        },
+      },
+      settings: {
+        appId: 'cli_settings',
+        appSecret: 'secret_settings',
+        dataDir: tempDir,
+      },
+      codexRunnerFactory(options) {
+        runnerCalls.push(options);
+        return {
+          async runTextTurn() {
+            return {
+              threadId: 'thread_002',
+              replyText: 'reply from default runner',
+            };
+          },
+        };
+      },
+      replyClient: {
+        async sendText() {},
+      },
+    });
+
+    assert.equal(runnerCalls.length, 1);
+    assert.equal(runnerCalls[0].codexHome, path.join(tempDir, 'codex-home'));
+  } finally {
+    fs.rmSync(tempDir, { recursive: true, force: true });
+  }
+});

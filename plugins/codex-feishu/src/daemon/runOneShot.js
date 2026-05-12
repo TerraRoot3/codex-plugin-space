@@ -18,6 +18,7 @@ export async function runOneShot({
   settings,
   env,
   codexRunner,
+  codexRunnerFactory = createCliCodexRunner,
   replyClient,
   cwd = process.cwd(),
 } = {}) {
@@ -27,7 +28,12 @@ export async function runOneShot({
 
   const orchestrator = createTaskOrchestrator({
     db,
-    codexRunner: codexRunner ?? createCliCodexRunner({ cwd }),
+    codexRunner:
+      codexRunner ??
+      codexRunnerFactory({
+        cwd,
+        codexHome: path.join(config.dataDir, 'codex-home'),
+      }),
     replyClient: replyClient ?? createStdoutReplyClient(),
   });
 
