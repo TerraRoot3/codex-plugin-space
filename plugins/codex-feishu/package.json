@@ -1,0 +1,15 @@
+{
+  "name": "codex-feishu",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Text-first Feishu to Codex local bridge prototype.",
+  "scripts": {
+    "test": "node --test",
+    "start:daemon": "node ./src/daemon/main.js",
+    "start:mcp": "node ./src/mcp/server.js"
+  },
+  "dependencies": {
+    "@larksuiteoapi/node-sdk": "^1.63.1"
+  }
+}
