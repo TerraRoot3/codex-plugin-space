@@ -20,8 +20,8 @@
   "apps": "./.app.json",
   "interface": {
     "displayName": "Codex Feishu",
-    "shortDescription": "Bridge Feishu bot messages into local Codex sessions",
-    "longDescription": "Run a local Feishu bot that forwards text messages into Codex and returns progress and final replies.",
+    "shortDescription": "Configure and run a local Feishu bot bridge for Codex",
+    "longDescription": "Configure Feishu credentials through MCP tools, start a local daemon, and bridge Feishu text messages into local Codex sessions.",
     "developerName": "hanbaokun",
     "category": "Productivity",
     "capabilities": [
@@ -33,9 +33,9 @@
     "termsOfServiceURL": "https://github.com/hanbaokun/codex-feishu",
     "brandColor": "#0066FF",
     "defaultPrompt": [
-      "List Feishu bindings",
-      "Show saved Codex sessions",
-      "Reply to the bound Feishu chat"
+      "Configure my Feishu App ID and App Secret",
+      "Start the local Feishu bridge daemon",
+      "Show the current bridge status and bindings"
     ],
     "screenshots": []
   }

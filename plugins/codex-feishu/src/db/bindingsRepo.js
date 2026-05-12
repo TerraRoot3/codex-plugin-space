@@ -33,3 +33,18 @@ export function getBindingByChatId(db, chatId) {
     replyToFeishu: Boolean(row.reply_to_feishu),
   };
 }
+
+export function listBindings(db) {
+  const statement = db.prepare(`
+    SELECT chat_id, thread_id, mode, reply_to_feishu
+    FROM bindings
+    ORDER BY chat_id ASC
+  `);
+
+  return statement.all().map((row) => ({
+    chatId: row.chat_id,
+    threadId: row.thread_id,
+    mode: row.mode,
+    replyToFeishu: Boolean(row.reply_to_feishu),
+  }));
+}

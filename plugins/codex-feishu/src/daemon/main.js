@@ -20,7 +20,20 @@ async function main() {
     return;
   }
 
-  await startLongConnection();
+  const runtime = await startLongConnection();
+  const shutdown = async () => {
+    if (runtime?.transport?.disconnect) {
+      await runtime.transport.disconnect();
+    }
+    process.exit(0);
+  };
+
+  process.once('SIGINT', () => {
+    void shutdown();
+  });
+  process.once('SIGTERM', () => {
+    void shutdown();
+  });
   process.stdout.write('codex-feishu long connection started\n');
 }
 
