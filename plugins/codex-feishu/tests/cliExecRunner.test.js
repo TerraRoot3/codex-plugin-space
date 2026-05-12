@@ -53,6 +53,7 @@ test('runTextTurn starts a new Codex session when no thread id exists', async ()
       '--json',
       '--output-last-message',
     ]);
+    assert.equal(calls[0].options?.env?.CODEX_HOME, undefined);
     assert.equal(result.threadId, 'thread_123');
     assert.equal(result.replyText, 'hello from codex');
   } finally {
@@ -130,6 +131,11 @@ test('runTextTurn executes codex with an isolated CODEX_HOME', async () => {
       codexHome,
       execFile: async (command, args, options) => {
         calls.push({ command, args, options });
+        if (calls.length === 1) {
+          const error = new Error('readonly state db');
+          error.stderr = 'attempt to write a readonly database';
+          throw error;
+        }
         const outputIndex = args.indexOf('--output-last-message');
         const outputPath = args[outputIndex + 1];
         await fs.writeFile(outputPath, 'isolated home reply', 'utf8');
@@ -146,7 +152,9 @@ test('runTextTurn executes codex with an isolated CODEX_HOME', async () => {
     });
 
     assert.equal(result.replyText, 'isolated home reply');
-    assert.equal(calls[0].options.env.CODEX_HOME, codexHome);
+    assert.equal(calls.length, 2);
+    assert.equal(calls[0].options?.env?.CODEX_HOME, undefined);
+    assert.equal(calls[1].options.env.CODEX_HOME, codexHome);
   } finally {
     await fs.rm(tempDir, { recursive: true, force: true });
   }
@@ -176,6 +184,7 @@ test('runTextTurn refreshes auth.json inside the isolated CODEX_HOME', async () 
       tempDir,
       codexHome,
       sourceCodexHome,
+      preferIsolatedHome: true,
       execFile: async (command, args) => {
         const outputIndex = args.indexOf('--output-last-message');
         const outputPath = args[outputIndex + 1];

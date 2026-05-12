@@ -55,11 +55,22 @@ async function prepareCodexHome({ codexHome, sourceCodexHome }) {
   await fs.copyFile(sourceAuthPath, targetAuthPath);
 }
 
+function shouldRetryWithIsolatedHome(error) {
+  const details = [error?.message, error?.stdout, error?.stderr]
+    .filter((value) => typeof value === 'string' && value.trim() !== '')
+    .join('\n');
+
+  return details.includes('attempt to write a readonly database')
+    || details.includes('failed to initialize state runtime')
+    || details.includes('failed to initialize in-process app-server client');
+}
+
 export function createCliCodexRunner({
   cwd,
   tempDir = os.tmpdir(),
   codexHome,
   sourceCodexHome = path.join(os.homedir(), '.codex'),
+  preferIsolatedHome = false,
   execFile = execFileDefault,
 } = {}) {
   return {
@@ -86,18 +97,37 @@ export function createCliCodexRunner({
             text,
           ];
 
-      await prepareCodexHome({ codexHome, sourceCodexHome });
+      async function executeTurn({ useIsolatedHome }) {
+        if (useIsolatedHome) {
+          await prepareCodexHome({ codexHome, sourceCodexHome });
+        }
 
-      const execOptions = { cwd };
+        const execOptions = { cwd };
 
-      if (codexHome) {
-        execOptions.env = {
-          ...process.env,
-          CODEX_HOME: codexHome,
-        };
+        if (useIsolatedHome && codexHome) {
+          execOptions.env = {
+            ...process.env,
+            CODEX_HOME: codexHome,
+          };
+        }
+
+        return execFile('codex', args, execOptions);
       }
 
-      const { stdout } = await execFile('codex', args, execOptions);
+      let stdout;
+
+      try {
+        ({ stdout } = await executeTurn({
+          useIsolatedHome: preferIsolatedHome,
+        }));
+      } catch (error) {
+        if (!preferIsolatedHome && codexHome && shouldRetryWithIsolatedHome(error)) {
+          ({ stdout } = await executeTurn({ useIsolatedHome: true }));
+        } else {
+          throw error;
+        }
+      }
+
       const replyText = await fs.readFile(messagePath, 'utf8');
       const resolvedThreadId =
         parseThreadStarted(stdout) ?? threadId;
