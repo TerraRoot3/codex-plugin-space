@@ -1,0 +1,42 @@
+{
+  "name": "codex-feishu",
+  "version": "0.1.0",
+  "description": "Local Codex plugin that bridges Feishu text conversations into Codex.",
+  "author": {
+    "name": "hanbaokun",
+    "email": "todo@example.com",
+    "url": "https://github.com/hanbaokun"
+  },
+  "homepage": "https://github.com/hanbaokun/codex-feishu",
+  "repository": "https://github.com/hanbaokun/codex-feishu",
+  "license": "MIT",
+  "keywords": [
+    "codex",
+    "feishu",
+    "lark",
+    "bot"
+  ],
+  "mcpServers": "./.mcp.json",
+  "apps": "./.app.json",
+  "interface": {
+    "displayName": "Codex Feishu",
+    "shortDescription": "Bridge Feishu bot messages into local Codex sessions",
+    "longDescription": "Run a local Feishu bot that forwards text messages into Codex and returns progress and final replies.",
+    "developerName": "hanbaokun",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive",
+      "Write"
+    ],
+    "websiteURL": "https://github.com/hanbaokun/codex-feishu",
+    "privacyPolicyURL": "https://github.com/hanbaokun/codex-feishu",
+    "termsOfServiceURL": "https://github.com/hanbaokun/codex-feishu",
+    "brandColor": "#0066FF",
+    "defaultPrompt": [
+      "List Feishu bindings",
+      "Show saved Codex sessions",
+      "Reply to the bound Feishu chat"
+    ],
+    "screenshots": []
+  }
+}
