@@ -11,6 +11,17 @@ function isPendingThreadId(threadId) {
   return typeof threadId === 'string' && threadId.startsWith('pending:');
 }
 
+function buildSharedArgs() {
+  return [
+    '-c',
+    'model_reasoning_effort="minimal"',
+    '-c',
+    'service_tier="fast"',
+    '--json',
+    '--output-last-message',
+  ];
+}
+
 function parseThreadStarted(stdout) {
   for (const line of stdout.split('\n')) {
     const trimmed = line.trim();
@@ -65,12 +76,11 @@ export function createCliCodexRunner({
       );
 
       const args = isPendingThreadId(threadId) || !threadId
-        ? ['exec', '--json', '--output-last-message', messagePath, text]
+        ? ['exec', ...buildSharedArgs(), messagePath, text]
         : [
             'exec',
             'resume',
-            '--json',
-            '--output-last-message',
+            ...buildSharedArgs(),
             messagePath,
             threadId,
             text,

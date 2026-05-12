@@ -44,7 +44,15 @@ test('runTextTurn starts a new Codex session when no thread id exists', async ()
     });
 
     assert.equal(calls[0].command, 'codex');
-    assert.deepEqual(calls[0].args.slice(0, 3), ['exec', '--json', '--output-last-message']);
+    assert.deepEqual(calls[0].args.slice(0, 7), [
+      'exec',
+      '-c',
+      'model_reasoning_effort="minimal"',
+      '-c',
+      'service_tier="fast"',
+      '--json',
+      '--output-last-message',
+    ]);
     assert.equal(result.threadId, 'thread_123');
     assert.equal(result.replyText, 'hello from codex');
   } finally {
@@ -77,10 +85,19 @@ test('runTextTurn resumes an existing Codex session when a thread id exists', as
       text: 'follow up',
     });
 
-    assert.deepEqual(calls[0].args.slice(0, 4), ['exec', 'resume', '--json', '--output-last-message']);
-    assert.equal(calls[0].args[4].includes('codex-feishu-last-message'), true);
-    assert.equal(calls[0].args[5], 'thread_existing');
-    assert.equal(calls[0].args[6], 'follow up');
+    assert.deepEqual(calls[0].args.slice(0, 8), [
+      'exec',
+      'resume',
+      '-c',
+      'model_reasoning_effort="minimal"',
+      '-c',
+      'service_tier="fast"',
+      '--json',
+      '--output-last-message',
+    ]);
+    assert.equal(calls[0].args[8].includes('codex-feishu-last-message'), true);
+    assert.equal(calls[0].args[9], 'thread_existing');
+    assert.equal(calls[0].args[10], 'follow up');
     assert.equal(result.threadId, 'thread_existing');
     assert.equal(result.replyText, 'continued reply');
   } finally {
